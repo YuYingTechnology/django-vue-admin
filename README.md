@@ -15,6 +15,9 @@
 开发工具： Pycharm
 ```
 
+### todo
+1. 三方登录时强制要求绑定主账户，没有主账户需要注册后再使用三方登录
+
 ### 加入我们
 
 <img src="https://github.com/YuYingTechnology/django-vue-admin/blob/main/images/qq.png?raw=true" width="25%" height="25%"><img src="https://github.com/YuYingTechnology/django-vue-admin/blob/main/images/wechat.png?raw=true" width="28%" height="28%">

@@ -64,6 +64,7 @@
           <img style="width: 60px; height: 60px;" src="../../assets/images/dingtalk.png">
         </el-button>
       </el-popover>
+      
       <el-popover
         placement="top"
         trigger="click">
