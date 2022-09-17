@@ -1,5 +1,5 @@
 import requests, json
-from oAuth.models import DingTalkManager
+from system.models import DingTalkManager
 
 class DingTalk(object):
 

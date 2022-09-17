@@ -1,5 +1,5 @@
 import requests
-from oAuth.models import WechatManager
+from system.models import WechatManager
 
 class Wechat(object):
 

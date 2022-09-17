@@ -1,5 +1,5 @@
 import requests, json
-from oAuth.models import FeiShuManager
+from system.models import FeiShuManager
 
 class FeiShu(object):
 

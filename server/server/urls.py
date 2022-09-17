@@ -28,8 +28,8 @@ from oAuth.views import (
     WechatTokenObtainPairView,
     DingTalkTokenObtainPairView,
     FeiShuTokenObtainPairView,
-    QRcodeViewSet,
 )
+from system.views import QRcodeViewSet
 
 router_V1 = routers.DefaultRouter()
 router_V1.register('info', UserInfoViewSet)
