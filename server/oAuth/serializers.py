@@ -1,11 +1,9 @@
 from oAuth.models import NewUser
 from rest_framework import serializers
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from rest_framework_simplejwt.serializers import PasswordField
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import exceptions
 from django.contrib.auth.models import update_last_login
 from oAuth.wechat import Wechat
 from oAuth.ding_talk import DingTalk

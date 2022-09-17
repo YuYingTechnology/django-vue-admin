@@ -15,9 +15,9 @@ class NewUser(AbstractUser):
 
     roles = models.IntegerField(verbose_name='角色', choices=role_type, default=1)
     last_login = models.DateTimeField(_('last login'), blank=True, null=True, auto_now=True)
-    wechat = models.ForeignKey('Wechat', null=True, blank=True, on_delete=models.SET_NULL)
-    dingtalk = models.ForeignKey('DingTalk', null=True, blank=True, on_delete=models.SET_NULL)
-    feishu = models.ForeignKey('FeiShu', null=True, blank=True, on_delete=models.SET_NULL)
+    wechat = models.OneToOneField('Wechat', null=True, blank=True, verbose_name='微信', on_delete=models.SET_NULL)
+    dingtalk = models.OneToOneField('DingTalk', null=True, blank=True, verbose_name='钉钉', on_delete=models.SET_NULL)
+    feishu = models.OneToOneField('FeiShu', null=True, blank=True, verbose_name='飞书', on_delete=models.SET_NULL)
 
     objects = UserManager()
 
