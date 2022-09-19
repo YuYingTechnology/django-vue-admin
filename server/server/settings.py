@@ -137,7 +137,10 @@ AUTH_USER_MODEL = 'oAuth.NewUser'
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'utils.PageNumberPagination.CustomPageNumberPagination',
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'utils.Response.CustomJSONRenderer',
+    # ],
     'PAGE_SIZE': 50,
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

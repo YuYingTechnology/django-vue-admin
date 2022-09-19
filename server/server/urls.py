@@ -28,12 +28,14 @@ from oAuth.views import (
     WechatTokenObtainPairView,
     DingTalkTokenObtainPairView,
     FeiShuTokenObtainPairView,
+    UserModelViewSet
 )
 from system.views import QRcodeViewSet
 
 router_V1 = routers.DefaultRouter()
 router_V1.register('info', UserInfoViewSet)
 router_V1.register('wechat/qrcode', QRcodeViewSet)
+router_V1.register('users', UserModelViewSet)
 
 urlpatterns = [
     path('api/', include(router_V1.urls)),

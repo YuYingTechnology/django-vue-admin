@@ -74,6 +74,28 @@ export const constantRoutes = [
   },
 
   {
+    path: '/system',
+    component: Layout,
+    redirect: '/system/user',
+    name: 'System',
+    meta: { title: 'System', icon: 'System' },
+    children: [
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/system/user'),
+        meta: { title: 'User', icon: 'User' }
+      },
+      // {
+      //   path: 'tree',
+      //   name: 'Tree',
+      //   component: () => import('@/views/tree/index'),
+      //   meta: { title: 'Tree', icon: 'tree' }
+      // }
+    ]
+  },
+
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',

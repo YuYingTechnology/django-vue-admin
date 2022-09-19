@@ -12,16 +12,43 @@ from oAuth.models import NewUser
 from oAuth.models import Wechat as WechatModel
 from oAuth.models import DingTalk as DingTalkModel
 from oAuth.models import FeiShu as FeiShuModel
+from django.db.models import ManyToOneRel
 
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+    column_list = serializers.SerializerMethodField()
 
     def get_name(self, obj):
         return obj.first_name + ' ' + obj.last_name
 
+    # 动态生成el-table column_list
+    def get_column_list(self, obj):
+
+        serializer_fields_list = self.Meta.fields
+        fields_list = NewUser._meta.get_fields()
+        fields_name_dict = {field.name: field.verbose_name for field in fields_list if not isinstance(field, ManyToOneRel)}
+        column_list = []
+        for serializer_field in serializer_fields_list:
+            if serializer_field in fields_name_dict and serializer_field != 'column_list':
+                column_list.append(
+                    {
+                        'prop': serializer_field,
+                        'label': fields_name_dict[serializer_field]
+                    }
+                )
+            elif serializer_field != 'column_list':
+                column_list.append(
+                    {
+                        'prop': serializer_field,
+                        'label': serializer_field
+                    }
+                )
+        return column_list
+
     class Meta:
         model = NewUser
-        fields = ['url', 'username', 'email', 'is_staff', 'name']
+        fields = ['id', 'url', 'username', 'name', 'email', 'is_staff', 'column_list']
+
 
 class WechatTokenObtainSerializer(serializers.Serializer):
     username_field = get_user_model().USERNAME_FIELD
