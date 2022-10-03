@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import (
     AbstractUser,
-    UserManager,
-    Group
+    UserManager
 )
 from django.utils.translation import gettext_lazy as _
 from system.models import Menu
@@ -12,18 +11,11 @@ from system.models import Menu
 
 class NewUser(AbstractUser):
 
-    role_type = [
-        [0, 'admin'],
-        [1, 'user'],
-    ]
-
-    roles = models.IntegerField(verbose_name='角色', choices=role_type, default=1)
     last_login = models.DateTimeField(_('last login'), blank=True, null=True, auto_now=True)
-    wechat = models.OneToOneField('Wechat', null=True, blank=True, verbose_name='微信', on_delete=models.SET_NULL)
-    dingtalk = models.OneToOneField('DingTalk', null=True, blank=True, verbose_name='钉钉', on_delete=models.SET_NULL)
-    feishu = models.OneToOneField('FeiShu', null=True, blank=True, verbose_name='飞书', on_delete=models.SET_NULL)
+    wechat = models.OneToOneField('Wechat', null=True, blank=True, verbose_name='企业微信', on_delete=models.SET_NULL, related_name='wechat_user')
+    dingtalk = models.OneToOneField('DingTalk', null=True, blank=True, verbose_name='钉钉', on_delete=models.SET_NULL, related_name='wechat_dingtalk')
+    feishu = models.OneToOneField('FeiShu', null=True, blank=True, verbose_name='飞书', on_delete=models.SET_NULL, related_name='wechat_feishu')
     menu = models.ManyToManyField(Menu, blank=True, verbose_name='菜单', related_name='menu')
-    group = models.ManyToManyField(Group, blank=True, verbose_name='用户组', related_name='group')
 
     objects = UserManager()
 

@@ -22,7 +22,8 @@ class QRcodeViewSet(viewsets.ViewSet):
         feishu_manager_info = FeiShuManager.objects.all()
         data = {
             'wechat_qr_code_url': '',
-            'dingtalk_qr_code_url': ''
+            'dingtalk_qr_code_url': '',
+            'feishu_qr_code_url': ''
         }
         try:
             wechat_redirect_uri = quote(request.META['HTTP_DOMAIN'] + '/wechat/login', safe='')

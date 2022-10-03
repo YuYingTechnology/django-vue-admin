@@ -28,7 +28,11 @@ from oAuth.views import (
     WechatTokenObtainPairView,
     DingTalkTokenObtainPairView,
     FeiShuTokenObtainPairView,
-    UserModelViewSet
+    UserModelViewSet,
+    WechatModelViewSet,
+    FeiShuModelViewSet,
+    DingTalkModelViewSet,
+    GroupModelViewSet
 )
 from system.views import QRcodeViewSet
 
@@ -36,13 +40,17 @@ router_V1 = routers.DefaultRouter()
 router_V1.register('info', UserInfoViewSet)
 router_V1.register('wechat/qrcode', QRcodeViewSet)
 router_V1.register('users', UserModelViewSet)
+router_V1.register('groups', GroupModelViewSet)
+router_V1.register('wechat', WechatModelViewSet)
+router_V1.register('feishu', FeiShuModelViewSet)
+router_V1.register('dingtalk', DingTalkModelViewSet)
 
 urlpatterns = [
-    path('api/', include(router_V1.urls)),
-    path('admin/', admin.site.urls),
-    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/wechat/login/', WechatTokenObtainPairView.as_view(), name='wechat_token_obtain_pair'),
     path('api/dingtalk/login/', DingTalkTokenObtainPairView.as_view(), name='ding_talk_token_obtain_pair'),
     path('api/feishu/login/', FeiShuTokenObtainPairView.as_view(), name='fei_shu_token_obtain_pair'),
+    path('api/', include(router_V1.urls)),
+    path('admin/', admin.site.urls),
+    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

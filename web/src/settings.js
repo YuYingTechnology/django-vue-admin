@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Django Vue Admin',
+  title: '青岛钰莹',
 
   /**
    * @type {boolean} true | false

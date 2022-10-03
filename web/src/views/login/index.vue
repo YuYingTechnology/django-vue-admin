@@ -58,7 +58,7 @@
       <el-popover
         placement="top"
         trigger="click">
-        <p v-if="wechat_qr_code_url == ''">请在后台设置钉钉管理信息</p>
+        <p v-if="dingtalk_qr_code_url == ''">请在后台设置钉钉管理信息</p>
         <iframe v-else style="height: 450px; text-align: center;" :src="dingtalk_qr_code_url" frameborder="0"></iframe>
         <el-button slot="reference" style="background-color: transparent; border: none">
           <img style="width: 60px; height: 60px;" src="../../assets/images/dingtalk.png">
@@ -119,7 +119,18 @@ export default {
     }
   },
   created(){
-    this.getWechatQRCode()
+    this.getWechatQRCode();
+  },
+  mounted() {
+    var fullHeight = document.documentElement.clientHeight - 155;
+    var fullWidth  = document.documentElement.clientWidth;
+    console.log(fullHeight, fullWidth);
+    var clientSize = {
+      'height': fullHeight,
+      'width': fullWidth
+    }
+    
+    this.$store.dispatch('settings/setHeightWidth', clientSize)
   },
   watch: {
     $route: {

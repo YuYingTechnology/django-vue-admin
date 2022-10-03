@@ -13,41 +13,73 @@ from oAuth.models import Wechat as WechatModel
 from oAuth.models import DingTalk as DingTalkModel
 from oAuth.models import FeiShu as FeiShuModel
 from django.db.models import ManyToOneRel
+from datetime import timedelta
+from django.contrib.auth.models import Group
+
+
+class WechatSerializer(serializers.ModelSerializer):
+    bound = serializers.SerializerMethodField()
+
+    def get_bound(self, obj):
+        print(obj)
+        try:
+            obj.wechat_user
+            return True
+        except:
+            return False
+
+    class Meta:
+        model = WechatModel
+        fields = ('__all__')
+
+
+class DingTalkSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = DingTalkModel
+        fields = ('__all__')
+
+
+class FeiShuSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FeiShuModel
+        fields = ('__all__')
+
+
+class GroupsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
+        fields = ['id', 'name']
+
 
 class UserSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
-    column_list = serializers.SerializerMethodField()
+    # name = serializers.SerializerMethodField()
+    # wechat = serializers.SerializerMethodField()
+    # dingtalk = serializers.SerializerMethodField()
+    # feishu = serializers.SerializerMethodField()
+    wechat = WechatSerializer()
+    dingtalk = DingTalkSerializer()
+    feishu = FeiShuSerializer()
+    groups = GroupsSerializer(many=True)
+    last_login = serializers.SerializerMethodField()
 
-    def get_name(self, obj):
-        return obj.first_name + ' ' + obj.last_name
+    # def get_name(self, obj):
+    #     return obj.last_name + ' ' + obj.first_name
 
-    # 动态生成el-table column_list
-    def get_column_list(self, obj):
-
-        serializer_fields_list = self.Meta.fields
-        fields_list = NewUser._meta.get_fields()
-        fields_name_dict = {field.name: field.verbose_name for field in fields_list if not isinstance(field, ManyToOneRel)}
-        column_list = []
-        for serializer_field in serializer_fields_list:
-            if serializer_field in fields_name_dict and serializer_field != 'column_list':
-                column_list.append(
-                    {
-                        'prop': serializer_field,
-                        'label': fields_name_dict[serializer_field]
-                    }
-                )
-            elif serializer_field != 'column_list':
-                column_list.append(
-                    {
-                        'prop': serializer_field,
-                        'label': serializer_field
-                    }
-                )
-        return column_list
+    def get_last_login(self, obj):
+        return (obj.last_login + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = NewUser
-        fields = ['id', 'url', 'username', 'name', 'email', 'is_staff', 'column_list']
+        fields = ['id', 'url', 'username', 'last_name', 'first_name', 'wechat', 'dingtalk', 'feishu', 'email', 'groups', 'is_active', 'is_superuser', 'last_login']
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = NewUser
+        fields = ('__all__')
 
 
 class WechatTokenObtainSerializer(serializers.Serializer):
@@ -85,6 +117,7 @@ class WechatTokenObtainSerializer(serializers.Serializer):
                         wechat_user = WechatModel.objects.create(userid=userid)
                         wechat_user.save()
                         user = NewUser.objects.create(username=userid, wechat=wechat_user)
+                        user.groups.add(Group.objects.get(name='user'))
                         user.save()
                     self.user = user
 
@@ -137,6 +170,7 @@ class DingTalkTokenObtainSerializer(serializers.Serializer):
                         dingtalk_user = DingTalkModel.objects.create(**dingtalk_user_info)
                         dingtalk_user.save()
                         user = NewUser.objects.create(username=openId, dingtalk=dingtalk_user)
+                        user.groups.add(Group.objects.get(name='user'))
                         user.save()
                     self.user = user
 
@@ -188,6 +222,7 @@ class FeiShuTokenObtainSerializer(serializers.Serializer):
                         feishu_user = FeiShuModel.objects.create(**feishu_user_info)
                         feishu_user.save()
                         user = NewUser.objects.create(username=open_id, feishu=feishu_user)
+                        user.groups.add(Group.objects.get(name='user'))
                         user.save()
                     self.user = user
 

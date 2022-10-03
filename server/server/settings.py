@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'system.apps.SystemConfig',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
