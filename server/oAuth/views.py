@@ -4,7 +4,10 @@ from rest_framework import (
     filters
 )
 from oAuth.models import (
-    NewUser, Wechat, FeiShu, DingTalk
+    NewUser,
+    Wechat,
+    FeiShu,
+    DingTalk
 )
 from oAuth.serializers import (
     UserSerializer,
@@ -23,16 +26,21 @@ from oAuth.serializers import (
     DingTalkTokenObtainSerializer,
     FeiShuTokenObtainSerializer,
 )
-from django.db.models import ManyToOneRel
 from utils.column_list import get_column_list
 from django.contrib.auth.models import Group
+from oAuth.permissions import (
+    IsOwer,
+    NewDjangoModelPermissions
+)
 
 
 class GroupModelViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupsSerializer
-    filter_backends = [filters.SearchFilter]
+    permission_classes = [NewDjangoModelPermissions]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id', 'name']
+    ordering_fields = '__all__'
 
     def list(self, request, *args, **kwargs):
 
@@ -57,11 +65,11 @@ class GroupModelViewSet(viewsets.ModelViewSet):
 class UserModelViewSet(viewsets.ModelViewSet):
     queryset = NewUser.objects.all().order_by('id')
     serializer_class = UserSerializer
+    permission_classes = [IsOwer|NewDjangoModelPermissions]
     filter_backends = [filters.SearchFilter]
-    search_fields = ['id', 'username', 'last_name', 'first_name', 'email']
+    search_fields = ['id', 'username', 'last_name', 'first_name', 'email', 'wechat__userid']
 
     def list(self, request, *args, **kwargs):
-
         # 获取column_list， 为前端table展示用
         serializer_fields_list = self.serializer_class.Meta.fields
         fields_list = NewUser._meta.get_fields()
@@ -104,6 +112,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class WechatModelViewSet(viewsets.ModelViewSet):
     queryset = Wechat.objects.all().order_by('id')
     serializer_class = WechatSerializer
+    permission_classes = [NewDjangoModelPermissions]
     filter_backends = [filters.SearchFilter]
     search_fields = ['id', 'userid']
 
@@ -129,6 +138,7 @@ class WechatModelViewSet(viewsets.ModelViewSet):
 class FeiShuModelViewSet(viewsets.ModelViewSet):
     queryset = FeiShu.objects.all().order_by('id')
     serializer_class = FeiShuSerializer
+    permission_classes = [NewDjangoModelPermissions]
     filter_backends = [filters.SearchFilter]
     search_fields = ['id', 'name', 'en_name', 'union_id', 'open_id']
 
@@ -154,6 +164,7 @@ class FeiShuModelViewSet(viewsets.ModelViewSet):
 class DingTalkModelViewSet(viewsets.ModelViewSet):
     queryset = DingTalk.objects.all().order_by('id')
     serializer_class = DingTalkSerializer
+    permission_classes = [NewDjangoModelPermissions]
     filter_backends = [filters.SearchFilter]
     search_fields = ['id', 'nick', 'unionId', 'openId', 'mobile']
 

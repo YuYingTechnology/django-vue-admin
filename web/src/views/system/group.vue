@@ -1,7 +1,19 @@
 <template>
     <div>
+        <el-input
+            v-model="queryParams.search"
+            style="width: 250px; margin: 10px 0 0 10px"
+            clearable
+            placeholder="输入用户组名称搜索">
+        </el-input>
+        <el-button
+            type="primary"
+            style="margin: 0 0 0 10px"
+            @click="dialogFormVisible = true;">
+            新建
+        </el-button>
         <el-pagination
-            style="text-align: center"
+            style="text-align: right; margin: -30px 10px 0 0"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :page-sizes="[1, 20, 50, 100, 200, 400, 500]"
@@ -14,7 +26,7 @@
             v-loading="isLoading"
             border
             :data="data"
-            style="width: 100%"
+            style="width: 100%; margin: 10px 0 0 0"
             :height="height + 'px'">
             <el-table-column
                 type="index"
@@ -33,7 +45,7 @@
                 label="操作"
                 min-width="120px"
                 width="400">
-                <template slot="header" slot-scope="scope">
+                <!-- <template slot="header" slot-scope="scope">
                     <el-button type="text" size="small" @click="dialogFormVisible = true;">新建</el-button>
                     <el-divider direction="vertical"></el-divider>
                     <el-input
@@ -41,8 +53,9 @@
                         size="mini"
                         style="width: 150px"
                         @input.native="getUserGroupList()"
-                        placeholder="输入用户组名称搜索"/>
-                </template>
+                        placeholder="输入用户组名称搜索">
+                    </el-input>
+                </template> -->
                 <template slot-scope="scope">
                     <el-button type="text" size="small" @click="dialogFormVisible = true; handleUpdateGroup(scope.row)">编辑</el-button>
                     <el-divider direction="vertical"></el-divider>
@@ -119,6 +132,12 @@
                 },
                 deep: true,
             },
+            // 实时监听搜索框
+            'queryParams.search':{
+                handler(val){
+                    this.getUserGroupList()
+                }
+            }
         },
         mounted() {
             this.getUserGroupList()

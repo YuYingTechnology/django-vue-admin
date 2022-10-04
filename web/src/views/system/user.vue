@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div>
+        <div style="margin: 10px 0 0 0">
             <el-tabs
                 v-model="activeName"
                 @tab-click="fetchDataAction"
@@ -11,8 +11,15 @@
                 <el-tab-pane label="飞书用户" name="feishu"></el-tab-pane>
                 <el-tab-pane label="钉钉用户" name="dintalk"></el-tab-pane>
             </el-tabs>
+            <el-input
+                v-model="queryParams.search"
+                style="width: 250px; margin: 10px 0 0 10px"
+                clearable
+                :placeholder="activeName == 'local' ? '输入id、用户名、姓名、邮箱搜索' : activeName == 'wechat' ? '输入id、企业微信id搜索' : activeName == 'feishu' ? '输入关键字搜索' : '输入关键字搜索'">
+            </el-input>
+            <!-- <el-button type="primary" @click="fetchDataAction()">搜索</el-button> -->
             <el-pagination
-                style="text-align: center"
+                style="text-align: right;margin: -30px 10px 0 0"
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
                 :page-sizes="[1, 20, 50, 100, 200, 400, 500]"
@@ -23,9 +30,10 @@
         </div>
         <el-table
             v-loading="isLoading"
+            @sort-change="handleSortChange"
             border
             :data="activeName == 'local' ? data : activeName == 'wechat' ? wechatData : activeName == 'feishu' ? feiShuData : dingtalkData"
-            style="width: 100%"
+            style="width: 100%;margin: 10px 0 0 0"
             :height="height + 'px'">
             <el-table-column
                 type="index"
@@ -59,21 +67,22 @@
                 fixed="right"
                 label="操作"
                 width="300">
-                <template slot="header" slot-scope="scope">
+                <!-- <template slot="header" slot-scope="scope">
                     <el-input
                         v-model="queryParams.search"
                         size="mini"
                         style="width: 250px"
                         @change="fetchDataAction()"
                         @input.native="fetchDataAction()"
-                        :placeholder="activeName == 'local' ? '输入id、用户名、姓名、邮箱搜索' : activeName == 'wechat' ? '输入id、企业微信id搜索' : activeName == 'feishu' ? '输入关键字搜索' : '输入关键字搜索'"/>
-                </template>
+                        :placeholder="activeName == 'local' ? '输入id、用户名、姓名、邮箱搜索' : activeName == 'wechat' ? '输入id、企业微信id搜索' : activeName == 'feishu' ? '输入关键字搜索' : '输入关键字搜索'">
+                    </el-input>
+                </template> -->
                 <template slot-scope="scope">
                     <el-button type="text" size="small" v-if="activeName == 'local'" @click="dialogFormVisible = true; handleUpdateLocalUser(scope.row); getWechatList(); getFeiShuList(); getDingtalkList(); getGroupsList()">编辑</el-button>
                     <el-divider direction="vertical"></el-divider>
                     <el-popover
                         placement="top"
-                        width="160">
+                        width="200">
                         <p>确定删除该条数据吗？</p>
                         <div style="text-align: right; margin: 0">
                             <!-- <el-button size="mini" type="text" @click="visible = false">取消</el-button> -->
@@ -169,7 +178,9 @@ export default {
         return {
             queryParams: {
                 size: 20,
-                page: 1
+                page: 1,
+                search: '',
+                ordering: '',
             },
             total: 0,
             wechatTotal: 0,
@@ -190,12 +201,32 @@ export default {
             groupsData: []
         }
     },
+    watch: {
+        // 实时监听搜索框
+        'queryParams.search':{
+            handler(val){
+                this.fetchDataAction()
+            }
+        }
+    },
     mounted() {
         this.fetchDataAction()
+        var el_tabs_content = document.querySelector('.el-tabs__content')
+        el_tabs_content.remove()
     },
     methods: {
         refreshData () {
             this.$forceUpdate()
+        },
+        handleSortChange(sortData){
+            console.log(sortData);
+            if(sortData.order == "descending"){
+                this.queryParams.ordering = '-' + sortData.prop
+            } else {
+                this.queryParams.ordering = sortData.prop
+            }
+            // Django 后端的方法，只允许当前页排序，没多大意义，暂时注释
+            // this.fetchDataAction()
         },
         fetchDataAction() {
             this.data = []
@@ -407,6 +438,7 @@ export default {
                     message: '更新成功',
                     type: 'success'
                 });
+                this.fetchDataAction()
             }).catch(error => {
                 this.isLoading = false
                 console.log('updateLocalUser===============', error)
@@ -416,6 +448,7 @@ export default {
                     message: '更新失败',
                     type: 'error'
                 });
+                this.fetchDataAction()
             })
         }
     },
