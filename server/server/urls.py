@@ -32,7 +32,8 @@ from oAuth.views import (
     WechatModelViewSet,
     FeiShuModelViewSet,
     DingTalkModelViewSet,
-    GroupModelViewSet
+    GroupModelViewSet,
+    PermissionModelViewSet
 )
 from system.views import QRcodeViewSet
 
@@ -41,6 +42,7 @@ router_V1.register('info', UserInfoViewSet)
 router_V1.register('wechat/qrcode', QRcodeViewSet)
 router_V1.register('users', UserModelViewSet)
 router_V1.register('groups', GroupModelViewSet)
+router_V1.register('permissions', PermissionModelViewSet)
 router_V1.register('wechat', WechatModelViewSet)
 router_V1.register('feishu', FeiShuModelViewSet)
 router_V1.register('dingtalk', DingTalkModelViewSet)

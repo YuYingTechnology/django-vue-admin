@@ -15,7 +15,8 @@ from oAuth.serializers import (
     FeiShuSerializer,
     DingTalkSerializer,
     UserUpdateSerializer,
-    GroupsSerializer
+    GroupsSerializer,
+    PermissionSerializer
 )
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import (
@@ -27,11 +28,23 @@ from oAuth.serializers import (
     FeiShuTokenObtainSerializer,
 )
 from utils.column_list import get_column_list
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import (
+    Group,
+    Permission
+)
 from oAuth.permissions import (
     IsOwer,
     NewDjangoModelPermissions
 )
+
+
+class PermissionModelViewSet(viewsets.ModelViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
+    permission_classes = [NewDjangoModelPermissions]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'name', 'content_type', 'codename']
+    ordering_fields = '__all__'
 
 
 class GroupModelViewSet(viewsets.ModelViewSet):

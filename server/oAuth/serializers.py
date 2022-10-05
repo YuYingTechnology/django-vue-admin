@@ -14,8 +14,14 @@ from oAuth.models import DingTalk as DingTalkModel
 from oAuth.models import FeiShu as FeiShuModel
 from django.db.models import ManyToOneRel
 from datetime import timedelta
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 
+
+class PermissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Permission
+        fields = ('__all__')
 
 class WechatSerializer(serializers.ModelSerializer):
     bound = serializers.SerializerMethodField()
@@ -48,10 +54,11 @@ class FeiShuSerializer(serializers.ModelSerializer):
 
 
 class GroupsSerializer(serializers.ModelSerializer):
+    permissions = PermissionSerializer(many=True)
 
     class Meta:
         model = Group
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'permissions']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,6 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
     feishu = FeiShuSerializer()
     groups = GroupsSerializer(many=True)
     last_login = serializers.SerializerMethodField()
+    user_permissions = PermissionSerializer(many=True)
 
     # def get_name(self, obj):
     #     return obj.last_name + ' ' + obj.first_name
@@ -73,7 +81,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NewUser
-        fields = ['id', 'url', 'username', 'last_name', 'first_name', 'wechat', 'dingtalk', 'feishu', 'email', 'groups', 'is_active', 'is_superuser', 'last_login']
+        fields = ['id', 'url', 'username', 'user_permissions', 'last_name', 'first_name', 'wechat', 'dingtalk', 'feishu', 'email', 'groups', 'is_active', 'is_superuser', 'last_login']
 
 class UserUpdateSerializer(serializers.ModelSerializer):
 

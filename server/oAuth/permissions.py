@@ -17,7 +17,8 @@ class IsOwer(BasePermission):
         Return `True` if permission is granted, `False` otherwise.
         """
         if 'is_superuser' in request.data or 'is_active' in request.data \
-                or 'groups' in request.data or 'wechat' in request.data:
+                or 'groups' in request.data or 'wechat' in request.data \
+                or 'dingtalk' in request.data or 'feishu' in request.data:
             return False
 
         # if ('is_superuser' in request.data and request.data['is_superuser'] != obj.is_superuser) \

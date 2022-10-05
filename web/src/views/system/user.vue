@@ -59,6 +59,9 @@
                     <span v-else-if="item.prop == 'groups' && scope.row[item.prop] != []" v-for="item in scope.row[item.prop]" :key='item.id'>
                         <el-tag size="medium">{{ item.name }}</el-tag>
                     </span>
+                    <span v-else-if="item.prop == 'user_permissions'">
+                        <el-button size="small" v-if="activeName == 'local'" @click="dialogPermissionsVisible = true; userPermissionsData = scope.row[item.prop]">查看</el-button>
+                    </span>
                     <span v-else>{{ scope.row[item.prop] }}</span>
                 </template>
 
@@ -67,16 +70,6 @@
                 fixed="right"
                 label="操作"
                 width="300">
-                <!-- <template slot="header" slot-scope="scope">
-                    <el-input
-                        v-model="queryParams.search"
-                        size="mini"
-                        style="width: 250px"
-                        @change="fetchDataAction()"
-                        @input.native="fetchDataAction()"
-                        :placeholder="activeName == 'local' ? '输入id、用户名、姓名、邮箱搜索' : activeName == 'wechat' ? '输入id、企业微信id搜索' : activeName == 'feishu' ? '输入关键字搜索' : '输入关键字搜索'">
-                    </el-input>
-                </template> -->
                 <template slot-scope="scope">
                     <el-button type="text" size="small" v-if="activeName == 'local'" @click="dialogFormVisible = true; handleUpdateLocalUser(scope.row); getWechatList(); getFeiShuList(); getDingtalkList(); getGroupsList()">编辑</el-button>
                     <el-divider direction="vertical"></el-divider>
@@ -93,60 +86,74 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog :title="'用户： ' + dataForm.username" :visible.sync="dialogFormVisible">
-            <el-form :inline="true" :model="dataForm">
-                <el-form-item label="用户名：" label-width="120px">
-                    <el-input v-model="dataForm.username" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="姓氏：" label-width="120px">
-                    <el-input v-model="dataForm.last_name" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="名字：" label-width="120px">
-                    <el-input v-model="dataForm.first_name" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱：" label-width="120px">
-                    <el-input v-model="dataForm.email" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="用户分组：" label-width="120px">
-                    <el-select v-model="dataForm.groups" multiple placeholder="请选择用户分组"  @change="refreshData">
-                        <el-option
-                            v-for="item in groupsData" 
-                            :key="item.id" 
-                            :label="item.name" 
-                            :value="item.id">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="企业微信账号：" label-width="120px">
-                    <el-select v-model="dataForm.wechat" clearable placeholder="请绑定企业微信">
-                        <el-option
-                            v-for="item in wechatData"
-                            :key="item.id"
-                            :label="item.userid"
-                            :value="item.id"
-                            :disabled="item.bound">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="飞书账号：" label-width="120px">
-                    <el-select v-model="dataForm.feishu" placeholder="请绑定飞书">
-                        <div v-for="item in feiShuData" :key="item.id">
-                            <el-option :label="item.userid" :value="item.userid"></el-option>
-                        </div>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="钉钉账号：" label-width="120px">
-                    <el-select v-model="dataForm.dingtalk" placeholder="请绑定钉钉">
-                        <div v-for="item in dingtalkData" :key="item.id">
-                            <el-option :label="item.nick" :value="item.id"></el-option>
-                        </div>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false; updateLocalUser(dataForm.id, dataForm)">确 定</el-button>
-            </div>
+        <el-dialog 
+            center :title="'用户： ' + dataForm.username" 
+            :visible.sync="dialogFormVisible">
+                <el-form :inline="true" :model="dataForm">
+                    <el-form-item label="用户名：" label-width="120px">
+                        <el-input v-model="dataForm.username" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓氏：" label-width="120px">
+                        <el-input v-model="dataForm.last_name" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="名字：" label-width="120px">
+                        <el-input v-model="dataForm.first_name" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="邮箱：" label-width="120px">
+                        <el-input v-model="dataForm.email" autocomplete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户分组：" label-width="120px">
+                        <el-select v-model="dataForm.groups" multiple placeholder="请选择用户分组"  @change="refreshData">
+                            <el-option
+                                v-for="item in groupsData" 
+                                :key="item.id" 
+                                :label="item.name" 
+                                :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="企业微信账号：" label-width="120px">
+                        <el-select v-model="dataForm.wechat" clearable placeholder="请绑定企业微信">
+                            <el-option
+                                v-for="item in wechatData"
+                                :key="item.id"
+                                :label="item.userid"
+                                :value="item.id"
+                                :disabled="item.bound">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="飞书账号：" label-width="120px">
+                        <el-select v-model="dataForm.feishu" placeholder="请绑定飞书">
+                            <div v-for="item in feiShuData" :key="item.id">
+                                <el-option :label="item.userid" :value="item.userid"></el-option>
+                            </div>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="钉钉账号：" label-width="120px">
+                        <el-select v-model="dataForm.dingtalk" placeholder="请绑定钉钉">
+                            <div v-for="item in dingtalkData" :key="item.id">
+                                <el-option :label="item.nick" :value="item.id"></el-option>
+                            </div>
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="dialogFormVisible = false; updateLocalUser(dataForm.id, dataForm)">确 定</el-button>
+                </div>
+        </el-dialog>
+        <el-dialog
+            title="提示"
+            :visible.sync="dialogPermissionsVisible"
+            center>
+            <span>
+                {{ userPermissionsData }}
+            </span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogPermissionsVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogPermissionsVisible = false">确 定</el-button>
+            </span>
         </el-dialog>
     </div>
 </template>
@@ -195,10 +202,12 @@ export default {
             activeName: 'local',
             dataForm: {},
             dialogFormVisible: false,
+            dialogPermissionsVisible: false,
             wechatData: [],
             feiShuData: [],
             dingtalkData: [],
-            groupsData: []
+            groupsData: [],
+            userPermissionsData: [],
         }
     },
     watch: {

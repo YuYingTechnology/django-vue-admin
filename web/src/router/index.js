@@ -84,13 +84,19 @@ export const constantRoutes = [
         path: 'user',
         name: 'User',
         component: () => import('@/views/system/user'),
-        meta: { title: '用户管理', icon: 'el-icon-user' }
+        meta: { title: '用户管理', icon: 'user' }
       },
       {
         path: 'group',
         name: 'Group',
         component: () => import('@/views/system/group'),
         meta: { title: '用户组管理', icon: 'user-group' }
+      },
+      {
+        path: 'permissions',
+        name: 'Permissions',
+        component: () => import('@/views/system/permissions'),
+        meta: { title: '权限管理', icon: 'permission' }
       }
     ]
   },
